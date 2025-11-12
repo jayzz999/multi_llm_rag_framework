@@ -1,0 +1,70 @@
+# Prompt Templates Configuration
+# Define reusable prompt templates for different use cases
+
+system_prompts:
+  default: |
+    You are a helpful AI assistant. Answer questions accurately based on the provided context.
+  
+  academic: |
+    You are an academic research assistant. Provide scholarly, well-reasoned responses.
+    Always cite sources and acknowledge limitations in the available information.
+  
+  technical: |
+    You are a technical expert. Provide precise, technically accurate answers.
+    Use domain-specific terminology when appropriate.
+  
+  creative: |
+    You are a creative AI assistant. Provide engaging and insightful responses.
+    Feel free to make connections and offer unique perspectives.
+
+user_prompts:
+  basic_rag: |
+    Context:
+    {context}
+    
+    Question: {question}
+    
+    Answer:
+  
+  with_reasoning: |
+    Based on the context below, answer the question. Show your reasoning.
+    
+    Context:
+    {context}
+    
+    Question: {question}
+    
+    Let me think through this step by step:
+  
+  with_citations: |
+    Answer the question based on the context. Cite specific document numbers.
+    
+    Context:
+    {context}
+    
+    Question: {question}
+    
+    Answer with citations:
+  
+  comparison: |
+    Compare the following based on the context: {items}
+    
+    Context:
+    {context}
+    
+    Structured comparison:
+
+examples:
+  few_shot_qa:
+    - question: "What is machine learning?"
+      answer: "Machine learning is a subset of AI that enables systems to learn from data."
+    
+    - question: "What is deep learning?"
+      answer: "Deep learning uses neural networks with multiple layers to learn complex patterns."
+  
+  few_shot_technical:
+    - question: "Explain REST API"
+      answer: "REST (Representational State Transfer) is an architectural style for APIs that uses HTTP methods."
+    
+    - question: "What is GraphQL?"
+      answer: "GraphQL is a query language for APIs that allows clients to request specific data."

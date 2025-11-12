@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python examples/basic_rag.py:*)",
+      "Bash(python:*)",
+      "Bash(pip install:*)",
+      "Bash(export USE_TF=0)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
