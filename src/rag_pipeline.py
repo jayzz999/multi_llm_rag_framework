@@ -225,11 +225,17 @@ class RAGPipeline:
             RAGResponse with retrieval scores
         """
         k = top_k or self.top_k
-        
+
+        # Generate query embedding if needed
+        query_embedding = None
+        if self.embedding:
+            query_embedding = self.embedding.embed_query(question)
+
         # Retrieve with scores
         docs_with_scores = self.vector_store.similarity_search_with_score(
             query=question,
-            k=k
+            k=k,
+            query_embedding=query_embedding
         )
         
         # Filter by threshold
@@ -277,29 +283,29 @@ class RAGPipeline:
     ) -> List[Document]:
         """
         Retrieve relevant documents from vector store.
-        
+
         Args:
             query: Query text
             k: Number of documents to retrieve
-            
+
         Returns:
             List of retrieved documents
         """
         try:
             # Generate query embedding if needed
+            query_embedding = None
             if self.embedding:
-                # If we have an embedding model, we might need to pass the embedding
-                # For now, most vector stores handle this internally
-                pass
-            
+                query_embedding = self.embedding.embed_query(query)
+
             # Search vector store
             documents = self.vector_store.similarity_search(
                 query=query,
-                k=k
+                k=k,
+                query_embedding=query_embedding
             )
-            
+
             return documents
-        
+
         except Exception as e:
             print(f"✗ Error retrieving documents: {str(e)}")
             return []
@@ -455,18 +461,21 @@ def create_rag_pipeline(
     from src.llms.ollama_llm import OllamaLLM
     from src.llms.openai_llm import OpenAILLM
     from src.llms.claude_llm import ClaudeLLM
+    from src.llms.gemini_llm import GeminiLLM
     from src.vector_stores.chroma_store import ChromaStore
     from src.vector_stores.weaviate_store import WeaviateStore
     from src.embeddings.sentence_transformer import SentenceTransformerEmbedding
     from src.embeddings.openai_embeddings import OpenAIEmbedding
-    
+
     # Initialize LLM
     if llm_type == "ollama":
         llm = OllamaLLM(model=llm_model)
     elif llm_type == "openai":
         llm = OpenAILLM(model=llm_model)
-    elif llm_type == "claude":
+    elif llm_type in ["claude", "anthropic"]:
         llm = ClaudeLLM(model=llm_model)
+    elif llm_type == "gemini":
+        llm = GeminiLLM(model=llm_model)
     else:
         raise ValueError(f"Unknown LLM type: {llm_type}")
     

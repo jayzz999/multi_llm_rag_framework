@@ -136,31 +136,42 @@ class ChromaStore(BaseVectorStore):
         return ids
     
     def similarity_search(
-        self, 
-        query: str, 
+        self,
+        query: str,
         k: int = 5,
-        filter: Optional[Dict[str, Any]] = None
+        filter: Optional[Dict[str, Any]] = None,
+        query_embedding: Optional[List[float]] = None
     ) -> List[Document]:
         """
         Search for similar documents.
-        
+
         Args:
             query: Query text
             k: Number of results to return
             filter: Optional metadata filter
-            
+            query_embedding: Pre-computed query embedding (optional)
+
         Returns:
             List of most similar documents
-            
+
         Example:
             results = store.similarity_search("What is RAG?", k=3)
         """
         # Query the collection
-        results = self.collection.query(
-            query_texts=[query],
-            n_results=k,
-            where=filter
-        )
+        if query_embedding:
+            # Use pre-computed embedding
+            results = self.collection.query(
+                query_embeddings=[query_embedding],
+                n_results=k,
+                where=filter
+            )
+        else:
+            # Let ChromaDB generate embedding
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=k,
+                where=filter
+            )
         
         # Convert to Document objects
         documents = []
@@ -177,34 +188,44 @@ class ChromaStore(BaseVectorStore):
         return documents
     
     def similarity_search_with_score(
-        self, 
-        query: str, 
+        self,
+        query: str,
         k: int = 5,
-        filter: Optional[Dict[str, Any]] = None
+        filter: Optional[Dict[str, Any]] = None,
+        query_embedding: Optional[List[float]] = None
     ) -> List[tuple[Document, float]]:
         """
         Search for similar documents with similarity scores.
-        
+
         Args:
             query: Query text
             k: Number of results to return
             filter: Optional metadata filter
-            
+            query_embedding: Pre-computed query embedding (optional)
+
         Returns:
             List of tuples (document, similarity_score)
-            
+
         Example:
             results = store.similarity_search_with_score("What is RAG?", k=3)
             for doc, score in results:
                 print(f"Score: {score}, Content: {doc.content[:100]}")
         """
         # Query the collection
-        results = self.collection.query(
-            query_texts=[query],
-            n_results=k,
-            where=filter,
-            include=['documents', 'metadatas', 'distances']
-        )
+        if query_embedding:
+            results = self.collection.query(
+                query_embeddings=[query_embedding],
+                n_results=k,
+                where=filter,
+                include=['documents', 'metadatas', 'distances']
+            )
+        else:
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=k,
+                where=filter,
+                include=['documents', 'metadatas', 'distances']
+            )
         
         # Convert to Document objects with scores
         documents_with_scores = []

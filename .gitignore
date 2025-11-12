@@ -52,6 +52,10 @@ data/processed/*
 chroma_db/
 weaviate_data/
 *.faiss
+openai_db/
+example_db/
+streamlit_db/
+*.db
 
 # Results
 results/benchmarks/*.json
@@ -70,3 +74,6 @@ htmlcov/
 
 # Documentation builds
 docs/_build/
+
+# Streamlit
+.streamlit/secrets.toml
